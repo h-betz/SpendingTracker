@@ -41,9 +41,6 @@ def sign_up(request):
             profile = profile_form.save(commit=False)
             profile.user = user             #Sets up the 1-1 relationship
 
-            # if 'profile_pic' in request.FILES:
-            #     profile.profile_pic = request.FILES['profile_pic']
-
             profile.save()
 
             # Registration was a success
