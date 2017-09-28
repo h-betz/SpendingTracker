@@ -5,18 +5,13 @@ function appendToCategoryList() {
     var div = document.getElementById("category-list");
     var li = document.createElement("li");
     var a = document.createElement("a");
-    //var div = document.createElement("div");
     a.appendChild(document.createTextNode(categoryName))
     a.onclick = function() {activeCategory(a.text)};
     a.setAttribute('class', 'list-group-item list-group-item-action');
     a.setAttribute('id', a.text);
-    //div.appendChild(a);
-    //div.setAttribute('class', 'categoryItem');
-    // li.appendChild(a);
-    // li.setAttribute('class', 'list-group-item list-group-item-action');
-    // li.setAttribute('id', a.text);
     div.appendChild(a);
     document.getElementById('category-input').value = '';
+    postCategoryName(categoryName);
     return false;
 }
 
@@ -81,4 +76,22 @@ function addExpense() {
     table.appendChild(tr);
 
     return false;
+}
+
+function postCategoryName(categoryName) {
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/api",
+        data: {
+            "category": categoryName,
+        },
+        success: function(data){
+            console.log("success");
+            console.log(data);
+        },
+        failure: function(data){
+            console.log("failure");
+            console.log(data);
+        },
+    });
 }

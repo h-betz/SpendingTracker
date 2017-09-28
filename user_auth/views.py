@@ -1,6 +1,9 @@
 from django.shortcuts import render
-from user_auth.forms import SpendingTrackerUserForm, UserForm, UserProfileInfoForm
+from user_auth.forms import UserForm, UserProfileInfoForm
+from user_auth.serializers import UserSerializer
+from rest_framework import generics
 from user_auth.forms import LoginForm
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -77,4 +80,14 @@ def user_login(request):
             return HttpResponse("Invalid login details supplied!")
     else:
         return render(request,'user_auth/login.html',{})
-        #return render(request,'stocker_app/dashboard.html',{})
+        #return render(request,'dashboard/dashboard.html',{})
+
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

@@ -13,7 +13,8 @@
                       <strong>Categories</strong>
                   </div>
                   <div class="panel body categories">
-                      <form onSubmit="appendToCategoryList();return false;" class="fixed">
+                      <form onSubmit="appendToCategoryList();return false;" class="fixed" method="POST" id="category-form">
+                        {% csrf_token %}
                           <div class="form-group">
                               <input class="form-control" placeholder="Food" type="text" id="category-input" autocomplete="off"/>
                           </div>
