@@ -7,13 +7,13 @@ class CategorySerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """
-        Create and return a new `Snippet` instance, given the validated data.
+        Create and return a new `Category` instance, given the validated data.
         """
         return Category.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `Snippet` instance, given the validated data.
+        Update and return an existing `Category` instance, given the validated data.
         """
         instance.name = validated_data.get('name', instance.name)
         instance.save()
@@ -29,13 +29,13 @@ class ExpenseSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """
-        Create and return a new `Snippet` instance, given the validated data.
+        Create and return a new `Expense` instance, given the validated data.
         """
         return Expense.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `Snippet` instance, given the validated data.
+        Update and return an existing `Expense` instance, given the validated data.
         """
         instance.description = validated_data.get('description', instance.description)
         instance.amount = validated_data.get('amount', instance.amount)
