@@ -32,10 +32,10 @@ function resetActiveCategory() {
 
 function addExpense() {
 
-    var formObj = {};
+    var formObj = new Map();
     var inputs = $('#expenseForm').serializeArray();
     $.each(inputs, function (i, input) {
-        formObj[input.name] = input.value;
+        formObj.set(input.name, input.value);
         input.value = '';
     });
 
@@ -64,14 +64,16 @@ function addExpense() {
     /**
      * Format expense info
      */
-    descriptionTd.appendChild(document.createTextNode(formObj['description']));
-    amountTd.appendChild(document.createTextNode(formObj['amount']));
-    dateTd.appendChild(document.createTextNode(formObj['date']));
+    descriptionTd.appendChild(document.createTextNode(formObj.get('description')));
+    amountTd.appendChild(document.createTextNode(formObj.get('amount')));
+    dateTd.appendChild(document.createTextNode(formObj.get('date')));
     
     tr.appendChild(deleteButtonTd);
     tr.appendChild(descriptionTd);
     tr.appendChild(amountTd);
     tr.appendChild(dateTd);
+
+    postExpense(formObj);
     
     table.appendChild(tr);
 
@@ -104,13 +106,39 @@ $.ajaxSetup({
 
 function postCategoryName(categoryName) {
     var csrftoken = Cookies.get('csrftoken');
+    var data = {
+        command: 'Add Category',
+        category: categoryName,
+        csrfmiddlewaretoken: csrftoken,
+    };
     $.ajax({
         type: "POST",
         url: "http://127.0.0.1:8000/dashboard/api/",
-        data: {
-            "category": categoryName,
-            csrfmiddlewaretoken: csrftoken,
+        data: data,
+        success: function(data){
+            console.log("success");
         },
+        failure: function(data){
+            console.log("failure");
+            console.log(data);
+        },
+    });
+}
+
+function postExpense(expenseDetails) {
+    var categoryName = document.getElementById('dash-head').innerText;
+    var csrftoken = Cookies.get('csrftoken');
+    var data = new Map(expenseDetails);
+    data = {
+        command: 'Add Expense',
+        category: categoryName,
+        csrfmiddlewaretoken: csrftoken,
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/dashboard/api/",
+        data: data,
         success: function(data){
             console.log("success");
         },
