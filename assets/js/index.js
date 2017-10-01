@@ -11,7 +11,10 @@ function appendToCategoryList() {
     a.setAttribute('id', a.text);
     div.appendChild(a);
     document.getElementById('category-input').value = '';
+    alert("Wait");
+    
     postCategoryName(categoryName);
+    
     return false;
 }
 
@@ -104,17 +107,31 @@ $.ajaxSetup({
     } 
 });
 
+function bindToken(csrf_token) {
+    $("body").bind("ajaxSend", function(elm, xhr, s){
+        if (s.type == "POST") {
+           xhr.setRequestHeader('X-CSRF-Token', csrf_token);
+        }
+    });
+}
+
+
 function postCategoryName(categoryName) {
     var csrftoken = Cookies.get('csrftoken');
-    var data = {
-        command: 'Add Category',
-        category: categoryName,
-        csrfmiddlewaretoken: csrftoken,
-    };
+    //console.log(document.getElementsByName('csrfmiddlewaretoken')[0].value);
+    //bindToken(csrftoken);
+    var data = new Map();    
+    data.set('command', 'Add Category');    
+    data.set('category', categoryName);
+    data = mapToJson(data);
     $.ajax({
         type: "POST",
+        headers: {
+            'Content-Type':'application/json'
+        },
         url: "http://127.0.0.1:8000/dashboard/api/",
-        data: data,
+        data: {csrfmiddlewaretoken: '{{ csrftoken }}', data},
+        datatype: 'json',
         success: function(data){
             console.log("success");
         },
@@ -128,17 +145,16 @@ function postCategoryName(categoryName) {
 function postExpense(expenseDetails) {
     var categoryName = document.getElementById('dash-head').innerText;
     var csrftoken = Cookies.get('csrftoken');
-    var data = new Map(expenseDetails);
-    data = {
-        command: 'Add Expense',
-        category: categoryName,
-        csrfmiddlewaretoken: csrftoken,
-    };
-
+    expenseDetails.set('command', 'Add Expense');
+    expenseDetails.set('category', categoryName);
+    expenseDetails = mapToJson(expenseDetails);
+    
     $.ajax({
         type: "POST",
         url: "http://127.0.0.1:8000/dashboard/api/",
-        data: data,
+        contentType: 'application/json; charset=utf-8',
+        data: {expenseDetails, csrfmiddlewaretoken: csrftoken},
+        datatype: 'text',
         success: function(data){
             console.log("success");
         },
@@ -147,4 +163,9 @@ function postExpense(expenseDetails) {
             console.log(data);
         },
     });
+}
+
+function mapToJson(map) {
+    var stuff = JSON.stringify([...map]);
+    return stuff;
 }
