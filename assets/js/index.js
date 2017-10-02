@@ -31,7 +31,6 @@ function resetActiveCategory() {
 }
 
 function addExpense() {
-
     var formObj = new Map();
     var inputs = $('#expenseForm').serializeArray();
     $.each(inputs, function (i, input) {
@@ -116,14 +115,13 @@ function postExpense(expenseDetails) {
     var csrftoken = Cookies.get('csrftoken');
     expenseDetails.set('command', 'Add Expense');
     expenseDetails.set('category', categoryName);
-    expenseDetails = mapToJson(expenseDetails);
+    data = mapToJson(expenseDetails);
     
     $.ajax({
         type: "POST",
         url: "http://127.0.0.1:8000/dashboard/api/",
-        contentType: 'application/json; charset=utf-8',
-        data: {expenseDetails, csrfmiddlewaretoken: csrftoken},
-        datatype: 'text',
+        data: data,
+        datatype: 'json',
         success: function(data){
             console.log("success");
         },
