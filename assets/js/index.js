@@ -10,11 +10,8 @@ function appendToCategoryList() {
     a.setAttribute('class', 'list-group-item list-group-item-action');
     a.setAttribute('id', a.text);
     div.appendChild(a);
-    document.getElementById('category-input').value = '';
-    alert("Wait");
-    
+    document.getElementById('category-input').value = '';    
     postCategoryName(categoryName);
-    
     return false;
 }
 
@@ -83,35 +80,11 @@ function addExpense() {
     return false;
 }
 
-$.ajaxSetup({ 
-    beforeSend: function(xhr, settings) {
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-            // Only send the token to relative URLs i.e. locally.
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
-    } 
-});
-
-function bindToken(csrf_token) {
-    $("body").bind("ajaxSend", function(elm, xhr, s){
-        if (s.type == "POST") {
-           xhr.setRequestHeader('X-CSRF-Token', csrf_token);
-        }
+function setup() {
+    $(function () {
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": Cookies.get('csrftoken') }
+        });
     });
 }
 
@@ -119,18 +92,14 @@ function bindToken(csrf_token) {
 function postCategoryName(categoryName) {
     var csrftoken = Cookies.get('csrftoken');
     //console.log(document.getElementsByName('csrfmiddlewaretoken')[0].value);
-    //bindToken(csrftoken);
     var data = new Map();    
     data.set('command', 'Add Category');    
     data.set('category', categoryName);
     data = mapToJson(data);
     $.ajax({
         type: "POST",
-        headers: {
-            'Content-Type':'application/json'
-        },
         url: "http://127.0.0.1:8000/dashboard/api/",
-        data: {csrfmiddlewaretoken: '{{ csrftoken }}', data},
+        data: data,
         datatype: 'json',
         success: function(data){
             console.log("success");

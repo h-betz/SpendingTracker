@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import json
+from .helper import jsonToDict
 from .models import Category, Expense
 
 # Create your views here.
@@ -7,12 +8,11 @@ def dashboard(request):
     return render(request,'dashboard/dashboard.html')
 
 def api(request):
+    print(request.body)
     if request.method == 'POST':
-        json_data = json.loads(request.body.decode('utf-8'))
-        print(json_data)
-        json_data = json_data['data']
-        #command = request.POST.get('command')
-        print(json_data)
+        data = request.body.decode("utf-8")
+        json_data = json.loads(data)
+        json_data = jsonToDict(json_data)
         category_name = json_data['category']
         command = json_data['command']
         if command == 'Add Category':

@@ -4,7 +4,9 @@
   {% block body_block %}
   <script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>  
   <script type="text/javascript" src="{% static 'js/js.cookie.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/index.js' %}">
+  </script>
+  <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-2 col-md-2 col-lg-3">
@@ -65,4 +67,11 @@
       </div>
       </div>
     </div>
+    <script>
+    $(function () {
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+        });
+    });
+</script> 
   {% endblock %}
