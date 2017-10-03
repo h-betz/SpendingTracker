@@ -17,6 +17,7 @@ function appendToCategoryList() {
 
 // Gets the selected category
 function activeCategory(text) {
+    resetTable();
     resetActiveCategory();
     var header = document.getElementById('dash-head');
     var a = document.getElementById(text);
@@ -28,6 +29,11 @@ function resetActiveCategory() {
     $('#category-list').find('a').each(function(){
         $(this).attr('class', 'list-group-item list-group-item-action');
     });
+}
+
+// Clears expense table
+function resetTable() {
+    $("#expense-table-body tr").remove(); 
 }
 
 function addExpense() {
@@ -90,7 +96,6 @@ function setup() {
 
 function postCategoryName(categoryName) {
     var csrftoken = Cookies.get('csrftoken');
-    //console.log(document.getElementsByName('csrfmiddlewaretoken')[0].value);
     var data = new Map();    
     data.set('command', 'Add Category');    
     data.set('category', categoryName);
