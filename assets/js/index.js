@@ -12,9 +12,22 @@ month_map.set(9, "October");
 month_map.set(10, "November");
 month_map.set(11, "December");
 
-//Appends category to the list of categories
-function appendToCategoryList() {
+//Populates the category list with the given categories
+function populateCategoryList(categories) {
+    for (var i = 0; i < categories.length; i++) {
+        var category = categories[i];
+        appendToCategoryList(category.fields.name);
+    }
+}
+
+//Function called when user adds a new category
+function addCategory() {
     var categoryName = document.getElementById('category-input').value;
+    appendToCategoryList(categoryName);
+}
+
+//Appends category to the list of categories
+function appendToCategoryList(categoryName) {
     var div = document.getElementById("category-list");
     var li = document.createElement("li");
     var a = document.createElement("a");
@@ -40,6 +53,7 @@ function activeCategory(text) {
     header.innerText = text;    
 }
 
+//Resets the active category to be inactive
 function resetActiveCategory() {
     $('#category-list').find('a').each(function(){
         $(this).attr('class', 'list-group-item list-group-item-action');
@@ -51,10 +65,12 @@ function resetTable() {
     $("#expense-table-body tr").remove(); 
 }
 
+//Clears out the Past expenses list
 function resetPastYears() {
     $("#accordion").empty(); 
 }
 
+//Adds the user input from the expense form
 function addExpense() {
     var formObj = new Map();
     var inputs = $('#expenseForm').serializeArray();
@@ -109,15 +125,7 @@ function addExpense() {
     return false;
 }
 
-function setup() {
-    $(function () {
-        $.ajaxSetup({
-            headers: { "X-CSRFToken": Cookies.get('csrftoken') }
-        });
-    });
-}
-
-
+//Sends the user input to the server to add a new category
 function postCategoryName(categoryName) {
     var csrftoken = Cookies.get('csrftoken');
     var data = new Map();    
@@ -139,6 +147,7 @@ function postCategoryName(categoryName) {
     });
 }
 
+//Sends the user input to the server to add a new expense
 function postExpense(expenseDetails) {
     var categoryName = document.getElementById('dash-head').innerText;
     var csrftoken = Cookies.get('csrftoken');
@@ -160,8 +169,25 @@ function postExpense(expenseDetails) {
     });
 }
 
+//Retrieves the categories associated with this user
 function getCategories() {
     // TODO get categories of this user
+    var data = new Map();
+    data.set('command', 'Get Categories');
+    data = mapToJson(data);
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/dashboard/api/",
+        data: data,
+        datatype: 'json',
+        success: function(data){
+            console.log("success");
+            populateCategoryList(data);
+        },
+        failure: function(data){
+            console.log("failure");
+        },
+    });
 }
 
 
@@ -169,6 +195,7 @@ function getExpenses(categoryName) {
     // TODO get expense data of this user based on category
 }
 
+//Populates the past expenses list
 function addPastExpenseOption(categoryName) {
     //Instantiate some variables
     var date = new Date();

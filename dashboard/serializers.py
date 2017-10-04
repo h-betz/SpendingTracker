@@ -1,9 +1,11 @@
 from rest_framework import serializers
-from models import Category, Expense
+from .models import Category, Expense
 from django.contrib.auth.models import User
+from user_auth.serializers import UserSerializer
 
 class CategorySerializer(serializers.Serializer):
-    name = serializers.CharField(required=True, allow_blank=False, max_length=50,read_only=True)
+    name = serializers.CharField(required=True, allow_blank=False, max_length=50)
+    user = UserSerializer(required=True)
 
     def create(self, validated_data):
         """
@@ -22,9 +24,9 @@ class CategorySerializer(serializers.Serializer):
 class ExpenseSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     description = serializers.CharField(required=True, allow_blank=False, max_length=100)
-    amount = serializers.DecimalField(required=True,allow_blank=False,max_digits=15,decimal_places=2)
-    date = serializers.DateField(required=True,allow_blank=False)
-    user = serializers.User(required=True,allow_blank=False,read_only=True)
+    amount = serializers.DecimalField(required=True,max_digits=15,decimal_places=2)
+    date = serializers.DateField(required=True)
+    user = UserSerializer(required=True)
     category = CategorySerializer()
 
     def create(self, validated_data):
