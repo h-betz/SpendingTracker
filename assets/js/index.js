@@ -70,8 +70,11 @@ function addExpense() {
      * Format expense info
      */
     descriptionTd.appendChild(document.createTextNode(formObj.get('description')));
+    descriptionTd.setAttribute("class", "description");
     amountTd.appendChild(document.createTextNode(formObj.get('amount')));
+    amountTd.setAttribute("class", "amount");
     dateTd.appendChild(document.createTextNode(formObj.get('date')));
+    dateTd.setAttribute("class", "date");
     
     tr.appendChild(deleteButtonTd);
     tr.appendChild(descriptionTd);
@@ -81,6 +84,8 @@ function addExpense() {
     postExpense(formObj);
     
     table.appendChild(tr);
+
+    updateTotal(formObj.get('amount'));
 
     return false;
 }
@@ -132,9 +137,52 @@ function postExpense(expenseDetails) {
         },
         failure: function(data){
             console.log("failure");
-            console.log(data);
         },
     });
+}
+
+function getCategories() {
+    // TODO get categories of this user
+}
+
+
+function getExpenses(categoryName) {
+    // TODO get expense data of this user based on category
+}
+
+function addPastExpenseOption() {
+    var a_year = document.createElement("a");
+    a_year.setAttribute('class', 'list-group-item list-group-item-action');
+    a_year.setAttribute('data-toggle', 'collapse');
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    a_year.setAttribute('href', year)    
+    a_year.appendChild(document.createTextNode(year));
+    //TODO populate collapsable menu
+}
+
+function populatePastExpensesList() {
+    // TODO add a list item for each year the category has been around
+}
+
+
+function addTotal() {
+    var total_text = document.getElementById('total');
+    var amounts = document.getElementsByClassName('amount');
+    var total = 0;
+    for (i = 0; i < amounts.length; i++) {
+        total += +amounts[i].innerText;
+    }
+    total_text.innerText = total;
+}
+
+function updateTotal(amount) {
+    var total_text = document.getElementById('total');
+    var total = +total_text.innerText;
+    console.log(amount);
+    total += +amount;
+    total_text.innerText = total;
 }
 
 function mapToJson(map) {
