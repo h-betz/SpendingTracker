@@ -47,6 +47,8 @@ function activeCategory(text) {
     resetPastYears();
     addPastExpenseOption(text);    
     resetActiveCategory();
+    getExpenses(text);
+    addTotal();    
     var header = document.getElementById('dash-head');
     var a = document.getElementById(text);
     a.className += " active";
@@ -68,6 +70,10 @@ function resetTable() {
 //Clears out the Past expenses list
 function resetPastYears() {
     $("#accordion").empty(); 
+}
+
+function populateExpenseList(expenses) {
+    //TODO populate the expense table
 }
 
 //Adds the user input from the expense form
@@ -171,7 +177,6 @@ function postExpense(expenseDetails) {
 
 //Retrieves the categories associated with this user
 function getCategories() {
-    // TODO get categories of this user
     var data = new Map();
     data.set('command', 'Get Categories');
     data = mapToJson(data);
@@ -190,9 +195,25 @@ function getCategories() {
     });
 }
 
-
+//Get the user's expenses for this category
 function getExpenses(categoryName) {
-    // TODO get expense data of this user based on category
+    var data = new Map();
+    data.set('command', 'Get Expenses');
+    data.set('category', categoryName);
+    data = mapToJson(data);
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/dashboard/api/",
+        data: data,
+        datatype: 'json',
+        success: function(data){
+            console.log("success");
+            populateExpenseList(data);
+        },
+        failure: function(data){
+            console.log("failure");
+        },
+    });
 }
 
 //Populates the past expenses list

@@ -20,11 +20,6 @@ def api(request):
         if command == 'Add Category':
             category_name = json_data['category']
             category, created = Category.objects.get_or_create(name=category_name, users=request.user)
-            # category = Category.objects.get(name=category_name)
-            # if category is None:
-            #     category = Category.objects.create(name=category_name, user=request.user)
-            # else:
-            #     category.update()
             category.save()
         elif command == 'Add Expense':
             category_name = json_data['category']
