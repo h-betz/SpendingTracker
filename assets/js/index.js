@@ -1,3 +1,16 @@
+const month_map = new Map();
+month_map.set(0, "January");
+month_map.set(1, "February");
+month_map.set(2, "March");
+month_map.set(3, "April");
+month_map.set(4, "May");
+month_map.set(5, "June");
+month_map.set(6, "July");
+month_map.set(7, "August");
+month_map.set(8, "September");
+month_map.set(9, "October");
+month_map.set(10, "November");
+month_map.set(11, "December");
 
 //Appends category to the list of categories
 function appendToCategoryList() {
@@ -18,6 +31,8 @@ function appendToCategoryList() {
 // Gets the selected category
 function activeCategory(text) {
     resetTable();
+    resetPastYears();
+    addPastExpenseOption(text);    
     resetActiveCategory();
     var header = document.getElementById('dash-head');
     var a = document.getElementById(text);
@@ -34,6 +49,10 @@ function resetActiveCategory() {
 // Clears expense table
 function resetTable() {
     $("#expense-table-body tr").remove(); 
+}
+
+function resetPastYears() {
+    $("#accordion").empty(); 
 }
 
 function addExpense() {
@@ -150,23 +169,86 @@ function getExpenses(categoryName) {
     // TODO get expense data of this user based on category
 }
 
-function addPastExpenseOption() {
-    var a_year = document.createElement("a");
-    a_year.setAttribute('class', 'list-group-item list-group-item-action');
-    a_year.setAttribute('data-toggle', 'collapse');
+function addPastExpenseOption(categoryName) {
+    //Instantiate some variables
     var date = new Date();
     var year = date.getFullYear();
     var month = date.getMonth();
-    a_year.setAttribute('href', year)    
-    a_year.appendChild(document.createTextNode(year));
-    //TODO populate collapsable menu
+    var id_tag = categoryName + year;
+    var collapse_tag = "collapse" + year;
+
+    //Create our containing div elements
+    var parent = document.getElementById("accordion");
+    var outer_div = document.createElement("div");
+    outer_div.setAttribute("class", "panel panel-default");
+    var panel_heading = document.createElement("div");
+    var content_div = document.createElement("div");
+    content_div.setAttribute('id', collapse_tag);
+    content_div.setAttribute('class', "panel-collapse collapse in");
+
+    var pastYears = document.getElementById(id_tag);
+    if (pastYears == null) {
+        //Create our content tag
+        var a_year = document.createElement("a");
+        a_year.setAttribute('id', id_tag);
+        a_year.setAttribute('class', 'list-group-item list-group-item-action');
+        a_year.setAttribute('data-toggle', 'collapse');
+        a_year.setAttribute('data-parent', "#accordion");
+        a_year.setAttribute('href', '#' + collapse_tag)    ;
+        a_year.appendChild(document.createTextNode(year));
+
+        //Start building our structure
+        panel_heading.appendChild(a_year);
+        outer_div.appendChild(panel_heading);
+        content_div = populateMonths(content_div, categoryName, year, month);
+        outer_div.appendChild(content_div);
+        parent.appendChild(outer_div);
+    } else {
+        //Add a new month
+        content_div = populateMonths(content_div, categoryName, year, month);
+        outer_div.appendChild(content_div);
+        parent.appendChild(outer_div);
+    }
+
+    
+}
+
+// Adds months to the sub list of the past year cateogry item
+function populateMonths(content_div, categoryName, year, month) {
+    var month_tag = categoryName + '_' +  year + '_' + month;
+    var past_month = document.getElementById(month_tag);
+    if (past_month == null) {
+        // New month record for this year
+        var a = document.createElement("a");
+        a.setAttribute("id", month_tag);
+        a.setAttribute('class', 'list-group-item list-group-item-action');
+        a.onclick = function() {getMonthExpenses(a.getAttribute('id'))};
+        a.appendChild(document.createTextNode(month_map.get(month)));
+        content_div.appendChild(a);
+        return content_div;
+    } else {
+        // Month already has a record
+        return content_div;
+    }
+}
+
+function createCollapsableMenu() {
+
 }
 
 function populatePastExpensesList() {
     // TODO add a list item for each year the category has been around
 }
 
+// Get the expenses for this month
+function getMonthExpenses(tag) {
+    var data = tag.split('_');
+    var category = data[0];
+    var year = data[1];
+    var month = data[2];
+}
 
+// Sums the total expenses of the selected category
 function addTotal() {
     var total_text = document.getElementById('total');
     var amounts = document.getElementsByClassName('amount');
@@ -177,6 +259,7 @@ function addTotal() {
     total_text.innerText = total;
 }
 
+// Updates the total expenses
 function updateTotal(amount) {
     var total_text = document.getElementById('total');
     var total = +total_text.innerText;
@@ -185,6 +268,7 @@ function updateTotal(amount) {
     total_text.innerText = total;
 }
 
+// Turns a map into a JSON object
 function mapToJson(map) {
     var stuff = JSON.stringify([...map]);
     return stuff;
