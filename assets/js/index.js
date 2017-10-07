@@ -72,23 +72,7 @@ function resetPastYears() {
     $("#accordion").empty(); 
 }
 
-function populateExpenseList(expenses) {
-    //TODO populate the expense table
-}
-
-//Adds the user input from the expense form
-function addExpense() {
-    var formObj = new Map();
-    var inputs = $('#expenseForm').serializeArray();
-    $.each(inputs, function (i, input) {
-        formObj.set(input.name, input.value);
-        input.value = '';
-    });
-
-    document.getElementById('expenseForm').reset();
-    
-    var categoryName = document.getElementById('dash-head').innerText;
-    var table = document.getElementById('expense-table-body');
+function createExpenseRow(formObj) {
     var tr = document.createElement('tr');
     tr.setAttribute('scope', 'row');
 
@@ -116,12 +100,47 @@ function addExpense() {
     amountTd.setAttribute("class", "amount");
     dateTd.appendChild(document.createTextNode(formObj.get('date')));
     dateTd.setAttribute("class", "date");
-    
+
     tr.appendChild(deleteButtonTd);
     tr.appendChild(descriptionTd);
     tr.appendChild(amountTd);
     tr.appendChild(dateTd);
 
+    return tr;
+}
+
+function populateExpenseList(expenses) {
+    var data = new Map();
+    var table = document.getElementById('expense-table-body');
+    var total = 0;
+    //TODO populate the expense table
+    for (var i = 0; i < expenses.length; i++) {
+        var values = expenses[i].fields;
+        data.set('description', values.description);
+        data.set('amount', values.amount);
+        total += +values.amount;
+        data.set('date', values.date);
+        var tr = createExpenseRow(data);
+        table.appendChild(tr);
+    }
+    setTotal(total);
+}
+
+//Adds the user input from the expense form
+function addExpense() {
+    var formObj = new Map();
+    var inputs = $('#expenseForm').serializeArray();
+    $.each(inputs, function (i, input) {
+        formObj.set(input.name, input.value);
+        input.value = '';
+    });
+
+    document.getElementById('expenseForm').reset();
+    
+    var categoryName = document.getElementById('dash-head').innerText;
+    var table = document.getElementById('expense-table-body');
+    var tr = createExpenseRow(formObj);
+    
     postExpense(formObj);
     
     table.appendChild(tr);
@@ -311,9 +330,13 @@ function addTotal() {
 function updateTotal(amount) {
     var total_text = document.getElementById('total');
     var total = +total_text.innerText;
-    console.log(amount);
     total += +amount;
-    total_text.innerText = total;
+    setTotal(total);
+}
+
+function setTotal(amount) {
+    var total_text = document.getElementById('total');
+    total_text.innerText = amount;
 }
 
 // Turns a map into a JSON object
