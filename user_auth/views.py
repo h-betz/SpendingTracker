@@ -4,6 +4,7 @@ from user_auth.forms import UserForm
 from user_auth.serializers import UserSerializer
 from rest_framework import generics
 from user_auth.forms import LoginForm
+from django.views.generic import View, TemplateView
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -11,12 +12,15 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
-def index(request):
-    return render(request,'user_auth/index.html')
+# def index(request):
+#     return render(request,'user_auth/index.html')
+class IndexView(TemplateView):
+    template_name = 'user_auth/index.html'
 
-
-def about(request):
-    return render(request,'about.html')
+# def about(request):
+#     return render(request,'about.html')
+class AboutView(TemplateView):
+    template_name = 'about.html'
 
 
 # Forces user to be logged-in in order to log out
@@ -25,9 +29,9 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-@login_required
-def dashboard(request):
-    return render(request,'dashboard/dashboard.html')
+# @login_required
+# def dashboard(request):
+#     return render(request,'dashboard/dashboard.html')
 
 
 def sign_up(request):

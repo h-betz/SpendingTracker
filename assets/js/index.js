@@ -334,6 +334,7 @@ function updateTotal(amount) {
     setTotal(total);
 }
 
+// Sets the total value text
 function setTotal(amount) {
     var total_text = document.getElementById('total');
     total_text.innerText = amount;

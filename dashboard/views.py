@@ -1,15 +1,17 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.views.generic import View, TemplateView, ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.core import serializers
 from .helper import jsonToDict
 from .models import Category, Expense
 
 # Create your views here.
-@login_required
-def dashboard(request):
-    return render(request,'dashboard/dashboard.html')
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard/dashboard.html'
+    redirect_field_name = 'user_uath/login.html'
 
 def api(request):
     if request.method == 'POST':

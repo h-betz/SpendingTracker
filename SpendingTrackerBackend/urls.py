@@ -20,12 +20,12 @@ from user_auth import views
 import dashboard
 
 urlpatterns = [
-    url(r'^$',views.index,name="index"),
+    url(r'^$',views.IndexView.as_view(),name="index"),
     url(r'^user_auth/',include('user_auth.urls')),
     url(r'^dashboard/',include('dashboard.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^about/', views.about,name="about"),
-    #url(r'^dashboard/',views.dashboard,name='dashboard'),
+    url(r'^about/',views.AboutView.as_view(),name='about'),
     url(r'^sign_up/',views.sign_up,name="sign_up"),
     url(r'^logout/$',views.user_logout,name='logout'),
+    url(r'^login/',views.user_login,name='user_login')
 ]
