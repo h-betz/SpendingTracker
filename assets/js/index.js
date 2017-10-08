@@ -43,6 +43,7 @@ function appendToCategoryList(categoryName) {
 
 // Gets the selected category
 function activeCategory(text) {
+    document.getElementById("expenseFieldset").disabled = false;
     resetTable();
     resetPastYears();
     addPastExpenseOption(text);    
@@ -166,8 +167,6 @@ function deleteExpense(parentElement) {
     });
     console.log(expenseDetails);
     deleteExpensePOST(expenseDetails, parentElement.rowIndex - 1, amount);
-    //table.deleteRow(parentElement.rowIndex - 1);
-    //updateTotal(amount);
 }
 
 //Sends the user input to the server to add a new category
@@ -384,6 +383,7 @@ function updateTotal(amount) {
 
 // Sets the total value text
 function setTotal(amount) {
+    amount = parseFloat(Math.round(amount * 100) / 100).toFixed(2);
     var total_text = document.getElementById('total');
     total_text.innerText = amount;
 }

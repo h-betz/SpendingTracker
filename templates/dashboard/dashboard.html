@@ -38,8 +38,11 @@
       </div>
       <div class="col-sm-10 col-md-10 col-lg-9">
         <div class='expense panel panel-primary'>
-            <div class='panel-heading'><strong><h1 id="dash-head">Expenses</h1></strong></div>
-            <div class='panel-body expenses'>
+            <div class='panel-heading'><strong><h1 id="dash-head">Expenses</h1></strong>
+            <br>
+            <b><i>Total:</i></b> <i>$<span id="total">0.00</span></i>
+            </div>
+            <div class='panel-body expenses' style="overflow: auto;height:300px;">
                 <table id="expense-table" class="table table-striped table-hover">
                   <thead>
                       <tr>
@@ -52,11 +55,6 @@
                   <tbody id="expense-table-body">
                     
                   </tbody>
-                  <tr>
-                    <td>
-                      <b><i>Total:</i></b> <i>$<span id="total">0.00</span></i>
-                    </td>
-                  </tr>
                 </table>
             </div>
           </div>
@@ -64,6 +62,7 @@
             <div class='panel-heading'><strong><h4>Add Expense</h4></strong></div>
             <div class="panel-body addexpense">
               <form onSubmit="addExpense();return false;" id="expenseForm" class="form-inline">
+                  <fieldset id="expenseFieldset" disabled="true">
                   <div class="form-group">
                     <div class="col-4">
                         <input class="form-control" placeholder="Description" type="text" name="description" id="description-input" autocomplete="off"/>
@@ -72,6 +71,7 @@
                       <button type="submit" class="btn btn-default" name="submit">Submit</button>
                     </div>
                   </div>
+                  </fieldset>
               </form>
             </div>
           </div>
