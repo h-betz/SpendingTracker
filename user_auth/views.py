@@ -12,13 +12,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
-# def index(request):
-#     return render(request,'user_auth/index.html')
 class IndexView(TemplateView):
     template_name = 'user_auth/index.html'
 
-# def about(request):
-#     return render(request,'about.html')
 class AboutView(TemplateView):
     template_name = 'about.html'
 
@@ -28,11 +24,6 @@ class AboutView(TemplateView):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
-
-# @login_required
-# def dashboard(request):
-#     return render(request,'dashboard/dashboard.html')
-
 
 def sign_up(request):
     registered = False
@@ -78,13 +69,3 @@ def user_login(request):
     else:
         return render(request,'user_auth/login.html',{})
         #return render(request,'dashboard/dashboard.html',{})
-
-
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer

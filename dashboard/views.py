@@ -28,6 +28,7 @@ def api(request):
             category = Category.objects.get(name=category_name)
             expense = Expense.objects.create(description=json_data['description'],
                 amount=json_data['amount'], date=json_data['date'], category=category, user=request.user)
+            expense.save()
         elif command == 'Get Categories':
             categories = Category.objects.filter(users=request.user)
             categories = serializers.serialize('json', categories)
@@ -37,5 +38,12 @@ def api(request):
             expenses = Expense.objects.filter(user=request.user,category__name=category_name)
             expenses = serializers.serialize('json', expenses)
             return HttpResponse(expenses, content_type='application/json')
+        elif command == 'Delete Expense':
+            category_name = json_data['category']
+            amount = json_data['amount']
+            description = json_data['description']
+            date = json_data['date']
+            Expense.objects.filter(user=request.user,category__name=category_name,
+                date=date,description=description,amount=amount).delete()
             
         return render(request, 'dashboard/dashboard.html')

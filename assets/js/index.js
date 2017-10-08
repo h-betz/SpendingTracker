@@ -72,6 +72,7 @@ function resetPastYears() {
     $("#accordion").empty(); 
 }
 
+// Creates a table row for an expense
 function createExpenseRow(formObj) {
     var tr = document.createElement('tr');
     tr.setAttribute('scope', 'row');
@@ -89,6 +90,7 @@ function createExpenseRow(formObj) {
      */
     var deleteButton = document.createElement('button');
     deleteButton.appendChild(document.createTextNode('Delete'));
+    deleteButton.onclick = function() { deleteExpense(this.parentElement.parentElement) };
     deleteButtonTd.appendChild(deleteButton);
 
     /**
@@ -148,6 +150,24 @@ function addExpense() {
     updateTotal(formObj.get('amount'));
 
     return false;
+}
+
+// Deletes the selected expense row
+function deleteExpense(parentElement) {
+    var amount = 0;
+    $(parentElement).find('td.amount').each(function() {
+        amount = +$(this).text() * -1;
+    });
+    var expenseDetails = new Map();
+    $(parentElement).find('td').each(function() {
+        if ($(this).attr('class') != null) {
+            expenseDetails.set($(this).attr('class'), $(this).text());
+        }
+    });
+    console.log(expenseDetails);
+    deleteExpensePOST(expenseDetails, parentElement.rowIndex - 1, amount);
+    //table.deleteRow(parentElement.rowIndex - 1);
+    //updateTotal(amount);
 }
 
 //Sends the user input to the server to add a new category
@@ -233,6 +253,34 @@ function getExpenses(categoryName) {
             console.log("failure");
         },
     });
+}
+
+function deleteExpensePOST(expenseDetails, row, amount) {
+    var data = new Map();
+    var categoryName = document.getElementById('dash-head').innerText;
+    expenseDetails.set('command', 'Delete Expense');
+    expenseDetails.set('category', categoryName);
+    data = mapToJson(expenseDetails);
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/dashboard/api/",
+        data: data,
+        datatype: 'json',
+        success: function(data){
+            console.log("success");
+            removeTableRow(row);
+            updateTotal(amount);
+        },
+        failure: function(data){
+            console.log("failure");
+        },
+    });
+}
+
+// Deletes the row from the table
+function removeTableRow(row) {
+    var table = document.getElementById('expense-table-body');
+    table.deleteRow(row);
 }
 
 //Populates the past expenses list
