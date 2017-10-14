@@ -23,6 +23,13 @@ def api(request):
             category_name = json_data['category']
             category, created = Category.objects.get_or_create(name=category_name, users=request.user)
             category.save()
+            result = {}
+            if created:
+                result['response'] = 'Created'
+            else:
+                result['response'] = 'Existed'
+            result = json.dumps(result)
+            return HttpResponse(result, content_type='applicationi/json')
         elif command == 'Add Expense':
             category_name = json_data['category']
             category = Category.objects.get(name=category_name)

@@ -23,7 +23,20 @@ function populateCategoryList(categories) {
 //Function called when user adds a new category
 function addCategory() {
     var categoryName = document.getElementById('category-input').value;
-    appendToCategoryList(categoryName);
+    if (!categoryExists(categoryName)) {
+        appendToCategoryList(categoryName);
+    }
+}
+
+//Checks to see if a category exists with the provided name
+function categoryExists(categoryName) {
+    var category = document.getElementById(categoryName);
+    if (category) {
+        alert("A category with that name already exists!");
+        return true;
+    } else {
+        return false;
+    }
 }
 
 //Appends category to the list of categories
