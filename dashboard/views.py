@@ -32,7 +32,7 @@ def api(request):
             return HttpResponse(result, content_type='applicationi/json')
         elif command == 'Add Expense':
             category_name = json_data['category']
-            category = Category.objects.get(name=category_name)
+            category = Category.objects.get(name=category_name,users=request.user)
             expense = Expense.objects.create(description=json_data['description'],
                 amount=json_data['amount'], date=json_data['date'], category=category, user=request.user)
             expense.save()
@@ -42,7 +42,9 @@ def api(request):
             return HttpResponse(categories, content_type='application/json')
         elif command == 'Get Expenses':
             category_name = json_data['category']
-            expenses = Expense.objects.filter(user=request.user,category__name=category_name)
+            month = json_data['month']
+            year = json_data['year']
+            expenses = Expense.objects.filter(user=request.user,category__name=category_name,date__year=year,date__month=month)
             expenses = serializers.serialize('json', expenses)
             return HttpResponse(expenses, content_type='application/json')
         elif command == 'Delete Expense':

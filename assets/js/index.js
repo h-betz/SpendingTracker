@@ -125,23 +125,6 @@ function createExpenseRow(formObj) {
     return tr;
 }
 
-function populateExpenseList(expenses) {
-    var data = new Map();
-    var table = document.getElementById('expense-table-body');
-    var total = 0;
-    //TODO populate the expense table
-    for (var i = 0; i < expenses.length; i++) {
-        var values = expenses[i].fields;
-        data.set('description', values.description);
-        data.set('amount', values.amount);
-        total += +values.amount;
-        data.set('date', values.date);
-        var tr = createExpenseRow(data);
-        table.appendChild(tr);
-    }
-    setTotal(total);
-}
-
 //Adds the user input from the expense form
 function addExpense() {
     var formObj = new Map();
@@ -249,8 +232,14 @@ function getCategories() {
 //Get the user's expenses for this category
 function getExpenses(categoryName) {
     var data = new Map();
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    month = 1 + +month;
     data.set('command', 'Get Expenses');
     data.set('category', categoryName);
+    data.set('month', month);
+    data.set('year', year);
     data = mapToJson(data);
     $.ajax({
         type: "POST",
@@ -267,6 +256,7 @@ function getExpenses(categoryName) {
     });
 }
 
+//Removes expense from the database
 function deleteExpensePOST(expenseDetails, row, amount) {
     var data = new Map();
     var categoryName = document.getElementById('dash-head').innerText;
@@ -287,6 +277,23 @@ function deleteExpensePOST(expenseDetails, row, amount) {
             console.log("failure");
         },
     });
+}
+
+function populateExpenseList(expenses) {
+    var data = new Map();
+    var table = document.getElementById('expense-table-body');
+    var total = 0;
+    //TODO populate the expense table
+    for (var i = 0; i < expenses.length; i++) {
+        var values = expenses[i].fields;
+        data.set('description', values.description);
+        data.set('amount', values.amount);
+        total += +values.amount;
+        data.set('date', values.date);
+        var tr = createExpenseRow(data);
+        table.appendChild(tr);
+    }
+    setTotal(total);
 }
 
 // Deletes the row from the table
@@ -363,8 +370,48 @@ function createCollapsableMenu() {
 
 }
 
-function populatePastExpensesList() {
+function populatePastExpensesList(expenses) {
     // TODO add a list item for each year the category has been around
+    var years = []
+    for (var i = 0; i < expenses.length; i++) {
+        var expense = expenses[i].fields;
+        var date = expense.date.split('-');
+        years.push(date[0]);
+    }
+
+}
+
+function createPastYearItem(year) {
+    
+    var categoryName = document.getElementById('dash-head').innerText;
+    var id_tag = categoryName + year;
+    var collapse_tag = "collapse" + year;
+
+    //Create our containing div elements
+    var parent = document.getElementById("accordion");
+    var outer_div = document.createElement("div");
+    outer_div.setAttribute("class", "panel panel-default");
+    var panel_heading = document.createElement("div");
+    var content_div = document.createElement("div");
+    content_div.setAttribute('id', collapse_tag);
+    content_div.setAttribute('class', "panel-collapse collapse in");
+
+    //Create our past year tag
+    var a_year = document.createElement("a");
+    a_year.setAttribute('id', id_tag);
+    a_year.setAttribute('class', 'list-group-item list-group-item-action');
+    a_year.setAttribute('data-toggle', 'collapse');
+    a_year.setAttribute('data-parent', "#accordion");
+    a_year.setAttribute('href', '#' + collapse_tag)    ;
+    a_year.appendChild(document.createTextNode(year));
+
+    //Start building our structure
+    panel_heading.appendChild(a_year);
+    outer_div.appendChild(panel_heading);
+    content_div = populateMonths(content_div, categoryName, year, month);
+    outer_div.appendChild(content_div);
+    parent.appendChild(outer_div);
+
 }
 
 // Get the expenses for this month
