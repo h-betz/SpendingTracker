@@ -59,7 +59,7 @@ function activeCategory(text) {
     document.getElementById("expenseFieldset").disabled = false;
     resetTable();
     resetPastYears();
-    addPastExpenseOption(text);    
+    //addPastExpenseOption(text);    
     resetActiveCategory();
     getExpenses(text);
     addTotal();    
@@ -249,6 +249,7 @@ function getExpenses(categoryName) {
         success: function(data){
             console.log("success");
             populateExpenseList(data);
+            addPastExpenseOption(categoryName);
         },
         failure: function(data){
             console.log("failure");
@@ -283,6 +284,8 @@ function populateExpenseList(expenses) {
     var data = new Map();
     var table = document.getElementById('expense-table-body');
     var total = 0;
+    var dates = new Map();
+
     //TODO populate the expense table
     for (var i = 0; i < expenses.length; i++) {
         var values = expenses[i].fields;
@@ -290,6 +293,18 @@ function populateExpenseList(expenses) {
         data.set('amount', values.amount);
         total += +values.amount;
         data.set('date', values.date);
+        date = date.split('-');
+        var year = date[0];
+        var month = date[1];
+        if (year in dates) {
+            var months = dates.get(year);
+            months.add(month);
+            dates.set(year, months);
+        } else {
+            var months = new Set();
+            months.add(month);
+            dates.set(year, months);
+        }
         var tr = createExpenseRow(data);
         table.appendChild(tr);
     }
@@ -300,6 +315,10 @@ function populateExpenseList(expenses) {
 function removeTableRow(row) {
     var table = document.getElementById('expense-table-body');
     table.deleteRow(row);
+}
+
+function createPastExpenseList(categoryName, years, months) {
+
 }
 
 //Populates the past expenses list
@@ -382,7 +401,7 @@ function populatePastExpensesList(expenses) {
 }
 
 function createPastYearItem(year) {
-    
+
     var categoryName = document.getElementById('dash-head').innerText;
     var id_tag = categoryName + year;
     var collapse_tag = "collapse" + year;
@@ -408,7 +427,7 @@ function createPastYearItem(year) {
     //Start building our structure
     panel_heading.appendChild(a_year);
     outer_div.appendChild(panel_heading);
-    content_div = populateMonths(content_div, categoryName, year, month);
+    //content_div = populateMonths(content_div, categoryName, year, month);
     outer_div.appendChild(content_div);
     parent.appendChild(outer_div);
 
