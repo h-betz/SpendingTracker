@@ -248,7 +248,7 @@ function getExpenses(categoryName) {
         datatype: 'json',
         success: function(data){
             console.log("success");
-            populateExpenseList(data);
+            populateExpenseList(data, categoryName);
             addPastExpenseOption(categoryName);
         },
         failure: function(data){
@@ -280,7 +280,7 @@ function deleteExpensePOST(expenseDetails, row, amount) {
     });
 }
 
-function populateExpenseList(expenses) {
+function populateExpenseList(expenses, categoryName) {
     var data = new Map();
     var table = document.getElementById('expense-table-body');
     var total = 0;
@@ -291,11 +291,17 @@ function populateExpenseList(expenses) {
         var values = expenses[i].fields;
         data.set('description', values.description);
         data.set('amount', values.amount);
+        
+        //Update total
         total += +values.amount;
+
+        //Parse date
         data.set('date', values.date);
-        date = date.split('-');
+        var date = values.date.split('-');
         var year = date[0];
         var month = date[1];
+
+        //Create date mapping
         if (year in dates) {
             var months = dates.get(year);
             months.add(month);
@@ -305,9 +311,13 @@ function populateExpenseList(expenses) {
             months.add(month);
             dates.set(year, months);
         }
+
+        //Create table row
         var tr = createExpenseRow(data);
         table.appendChild(tr);
     }
+    console.log(dates);
+    createPastExpenseList(categoryName, dates)
     setTotal(total);
 }
 
@@ -317,8 +327,17 @@ function removeTableRow(row) {
     table.deleteRow(row);
 }
 
-function createPastExpenseList(categoryName, years, months) {
-
+//Creates a list of past expenses
+function createPastExpenseList(categoryName, dates) {
+    var years = new Array();
+    for (const year of dates.entries()) {
+        years.push(year[0]);
+    }
+    years.sort();
+    for (var i = 0; i < years.length; i++) {
+        
+    }
+    console.log(years);
 }
 
 //Populates the past expenses list
