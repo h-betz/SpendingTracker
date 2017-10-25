@@ -1,16 +1,16 @@
 const month_map = new Map();
-month_map.set(0, "January");
-month_map.set(1, "February");
-month_map.set(2, "March");
-month_map.set(3, "April");
-month_map.set(4, "May");
-month_map.set(5, "June");
-month_map.set(6, "July");
-month_map.set(7, "August");
-month_map.set(8, "September");
-month_map.set(9, "October");
-month_map.set(10, "November");
-month_map.set(11, "December");
+month_map.set(1, "January");
+month_map.set(2, "February");
+month_map.set(3, "March");
+month_map.set(4, "April");
+month_map.set(5, "May");
+month_map.set(6, "June");
+month_map.set(7, "July");
+month_map.set(8, "August");
+month_map.set(9, "September");
+month_map.set(10, "October");
+month_map.set(11, "November");
+month_map.set(12, "December");
 
 //Populates the category list with the given categories
 function populateCategoryList(categories) {
@@ -239,7 +239,7 @@ function getExpenses(categoryName) {
     data.set('command', 'Get Expenses');
     data.set('category', categoryName);
     data.set('month', month);
-    data.set('year', year);
+    //data.set('year', year);
     data = mapToJson(data);
     $.ajax({
         type: "POST",
@@ -249,7 +249,7 @@ function getExpenses(categoryName) {
         success: function(data){
             console.log("success");
             populateExpenseList(data, categoryName);
-            addPastExpenseOption(categoryName);
+            //addPastExpenseOption(categoryName);
         },
         failure: function(data){
             console.log("failure");
@@ -302,7 +302,7 @@ function populateExpenseList(expenses, categoryName) {
         var month = date[1];
 
         //Create date mapping
-        if (year in dates) {
+        if (dates.has(year)) {
             var months = dates.get(year);
             months.add(month);
             dates.set(year, months);
@@ -333,19 +333,18 @@ function createPastExpenseList(categoryName, dates) {
     for (const year of dates.entries()) {
         years.push(year[0]);
     }
-    years.sort();
+    years.sort(function(a, b){return b-a});
     for (var i = 0; i < years.length; i++) {
-        
+        addPastExpenseOption(categoryName, years[i], dates.get(years[i]));
     }
-    console.log(years);
 }
 
 //Populates the past expenses list
-function addPastExpenseOption(categoryName) {
+function addPastExpenseOption(categoryName, year, months) {
     //Instantiate some variables
-    var date = new Date();
-    var year = date.getFullYear();
-    var month = date.getMonth();
+    // var date = new Date();
+    // var year = date.getFullYear();
+    // var month = date.getMonth();
     var id_tag = categoryName + year;
     var collapse_tag = "collapse" + year;
 
@@ -372,12 +371,10 @@ function addPastExpenseOption(categoryName) {
         //Start building our structure
         panel_heading.appendChild(a_year);
         outer_div.appendChild(panel_heading);
-        content_div = populateMonths(content_div, categoryName, year, month);
-        outer_div.appendChild(content_div);
-        parent.appendChild(outer_div);
-    } else {
-        //Add a new month
-        content_div = populateMonths(content_div, categoryName, year, month);
+    }
+
+    for (let month of months.values()) {
+        content_div = populateMonths(content_div, categoryName, year, +month);
         outer_div.appendChild(content_div);
         parent.appendChild(outer_div);
     }
@@ -387,7 +384,7 @@ function addPastExpenseOption(categoryName) {
 
 // Adds months to the sub list of the past year cateogry item
 function populateMonths(content_div, categoryName, year, month) {
-    var month_tag = categoryName + '_' +  year + '_' + month;
+    var month_tag = categoryName + '_' +  year + '_' + month_map.get(month);
     var past_month = document.getElementById(month_tag);
     if (past_month == null) {
         // New month record for this year
