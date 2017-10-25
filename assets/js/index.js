@@ -316,7 +316,7 @@ function populateExpenseList(expenses, categoryName) {
         var tr = createExpenseRow(data);
         table.appendChild(tr);
     }
-    console.log(dates);
+
     createPastExpenseList(categoryName, dates)
     setTotal(total);
 }
@@ -342,9 +342,6 @@ function createPastExpenseList(categoryName, dates) {
 //Populates the past expenses list
 function addPastExpenseOption(categoryName, year, months) {
     //Instantiate some variables
-    // var date = new Date();
-    // var year = date.getFullYear();
-    // var month = date.getMonth();
     var id_tag = categoryName + year;
     var collapse_tag = "collapse" + year;
 
@@ -355,14 +352,15 @@ function addPastExpenseOption(categoryName, year, months) {
     var panel_heading = document.createElement("div");
     var content_div = document.createElement("div");
     content_div.setAttribute('id', collapse_tag);
-    content_div.setAttribute('class', "panel-collapse collapse in");
+    content_div.setAttribute('class', "panel-collapse collapse");
 
     var pastYears = document.getElementById(id_tag);
     if (pastYears == null) {
         //Create our content tag
         var a_year = document.createElement("a");
         a_year.setAttribute('id', id_tag);
-        a_year.setAttribute('class', 'list-group-item list-group-item-action');
+        a_year.setAttribute('class', 'list-group-item list-group-item-action collapsed');
+        a_year.setAttribute('aria-expanded', 'false');
         a_year.setAttribute('data-toggle', 'collapse');
         a_year.setAttribute('data-parent', "#accordion");
         a_year.setAttribute('href', '#' + collapse_tag)    ;
