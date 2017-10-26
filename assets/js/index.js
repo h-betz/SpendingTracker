@@ -238,9 +238,9 @@ function getExpenses(categoryName) {
     month = 1 + +month;
     data.set('command', 'Get Expenses');
     data.set('category', categoryName);
-    data.set('month', month);
-    //data.set('year', year);
+
     data = mapToJson(data);
+
     $.ajax({
         type: "POST",
         url: "http://127.0.0.1:8000/dashboard/api/",
@@ -249,6 +249,30 @@ function getExpenses(categoryName) {
         success: function(data){
             console.log("success");
             populateExpenseList(data, categoryName);
+        },
+        failure: function(data){
+            console.log("failure");
+        },
+    });
+}
+
+function getExpensesByDate(categoryName, year, month) {
+
+    var data = new Map();
+    data.set('command', 'Get Expenses');
+    data.set('category', categoryName);
+    data.set('month', month);
+    data.set('year', year);
+    data = mapToJson(data);
+
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/dashboard/api/",
+        data: data,
+        datatype: 'json',
+        success: function(data){
+            console.log("Got Data By Date");
+            //populateExpenseList(data, categoryName);
             //addPastExpenseOption(categoryName);
         },
         failure: function(data){
@@ -280,7 +304,13 @@ function deleteExpensePOST(expenseDetails, row, amount) {
     });
 }
 
+//Populates the expense table with the previously added expenses
 function populateExpenseList(expenses, categoryName) {
+
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear();
+    var currentMonth = currentDate.getMonth() + 1;
+
     var data = new Map();
     var table = document.getElementById('expense-table-body');
     var total = 0;
@@ -313,8 +343,10 @@ function populateExpenseList(expenses, categoryName) {
         }
 
         //Create table row
-        var tr = createExpenseRow(data);
-        table.appendChild(tr);
+        if (year == currentYear && month == currentMonth) {
+            var tr = createExpenseRow(data);
+            table.appendChild(tr);
+        }
     }
 
     createPastExpenseList(categoryName, dates)
@@ -389,7 +421,7 @@ function populateMonths(content_div, categoryName, year, month) {
         var a = document.createElement("a");
         a.setAttribute("id", month_tag);
         a.setAttribute('class', 'list-group-item list-group-item-action');
-        a.onclick = function() {getMonthExpenses(a.getAttribute('id'))};
+        a.onclick = function() {getExpensesByDate(categoryName,year,month)};
         a.appendChild(document.createTextNode(month_map.get(month)));
         content_div.appendChild(a);
         return content_div;
@@ -397,10 +429,6 @@ function populateMonths(content_div, categoryName, year, month) {
         // Month already has a record
         return content_div;
     }
-}
-
-function createCollapsableMenu() {
-
 }
 
 function populatePastExpensesList(expenses) {
