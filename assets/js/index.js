@@ -1,4 +1,7 @@
 const month_map = new Map();
+const todaysDate = new Date();
+var selectedMonth = todaysDate.getMonth();
+var selectedYear = todaysDate.getFullYear();
 month_map.set(1, "January");
 month_map.set(2, "February");
 month_map.set(3, "March");
@@ -59,7 +62,6 @@ function activeCategory(text) {
     document.getElementById("expenseFieldset").disabled = false;
     resetTable();
     resetPastYears();
-    //addPastExpenseOption(text);    
     resetActiveCategory();
     getExpenses(text);
     addTotal();    
@@ -134,17 +136,22 @@ function addExpense() {
         input.value = '';
     });
 
-    document.getElementById('expenseForm').reset();
-    
-    var categoryName = document.getElementById('dash-head').innerText;
-    var table = document.getElementById('expense-table-body');
-    var tr = createExpenseRow(formObj);
-    
-    postExpense(formObj);
-    
-    table.appendChild(tr);
+    var date = formObj.get('date');
+    date = date.split('-');
+    var month = date[1];
+    var year = date[0];
 
-    updateTotal(formObj.get('amount'));
+    if (month == selectedMonth && year == selectedYear) {
+        //Append expense to table
+        var categoryName = document.getElementById('dash-head').innerText;
+        var table = document.getElementById('expense-table-body');
+        var tr = createExpenseRow(formObj);
+        table.appendChild(tr);
+        updateTotal(formObj.get('amount'));        
+    }
+
+    document.getElementById('expenseForm').reset();
+    postExpense(formObj);
 
     return false;
 }
@@ -256,10 +263,14 @@ function getExpenses(categoryName) {
     });
 }
 
+//Get expense data for the given month and year
 function getExpensesByDate(categoryName, year, month) {
 
+    selectedMonth = month;
+    selectedYear = year;
+
     var data = new Map();
-    data.set('command', 'Get Expenses');
+    data.set('command', 'Get Expenses By Date');
     data.set('category', categoryName);
     data.set('month', month);
     data.set('year', year);
@@ -271,7 +282,8 @@ function getExpensesByDate(categoryName, year, month) {
         data: data,
         datatype: 'json',
         success: function(data){
-            console.log("Got Data By Date");
+            console.log("success");
+            repopulateExpenseList(data, categoryName);
             //populateExpenseList(data, categoryName);
             //addPastExpenseOption(categoryName);
         },
@@ -302,6 +314,31 @@ function deleteExpensePOST(expenseDetails, row, amount) {
             console.log("failure");
         },
     });
+}
+
+function repopulateExpenseList(expenses, categoryName) {
+
+    resetTable();
+    var table = document.getElementById('expense-table-body');
+    var data = new Map();
+    var total = 0;
+
+    for (var i = 0; i < expenses.length; i++) {
+        var values = expenses[i].fields;
+
+        //Update total
+        total += +values.amount;
+
+        data.set('description', values.description);
+        data.set('amount', values.amount);
+        data.set('date', values.date);
+
+        var tr = createExpenseRow(data);
+        table.appendChild(tr);
+    }
+
+    setTotal(total);
+
 }
 
 //Populates the expense table with the previously added expenses
@@ -469,7 +506,6 @@ function createPastYearItem(year) {
     //Start building our structure
     panel_heading.appendChild(a_year);
     outer_div.appendChild(panel_heading);
-    //content_div = populateMonths(content_div, categoryName, year, month);
     outer_div.appendChild(content_div);
     parent.appendChild(outer_div);
 
