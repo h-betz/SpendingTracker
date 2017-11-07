@@ -1,5 +1,6 @@
 const month_map = new Map();
 const todaysDate = new Date();
+console.log(todaysDate);
 var selectedMonth = todaysDate.getMonth();
 var selectedYear = todaysDate.getFullYear();
 month_map.set(1, "January");
@@ -358,15 +359,18 @@ function populateExpenseList(expenses, categoryName) {
         var values = expenses[i].fields;
         data.set('description', values.description);
         data.set('amount', values.amount);
-        
-        //Update total
-        total += +values.amount;
 
         //Parse date
         data.set('date', values.date);
         var date = values.date.split('-');
         var year = date[0];
         var month = date[1];
+
+        //Update total
+        if (year == selectedYear && month == (selectedMonth + 1)) {
+            console.log(selectedMonth);
+            total += +values.amount;
+        }
 
         //Create date mapping
         if (dates.has(year)) {
